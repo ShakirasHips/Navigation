@@ -1,6 +1,7 @@
 #include "Map.h"
 #include <iostream>
 #define log(x) std::cout << x << std::endl;
+
 Map::Map()
 {
 
@@ -54,8 +55,6 @@ bool Map::loadMap(std::string filePath)
 			{
 				for (size_t j = 0; j < parsedString[3]; j++)
 				{
-					log(parsedString[0] + i);
-					log(parsedString[1] + j);
 					mapData[parsedString[1] + j][parsedString[0] + i] = wall;
 				}
 			}
@@ -72,5 +71,15 @@ bool Map::loadMap(std::string filePath)
 
 void Map::printMap()
 {
-
+	for (auto data: mapData) 
+	{
+		for (auto elements : data)
+		{
+			if (elements == wall)
+				std::cout << "w";
+			else if (elements == empty)
+				std::cout << "_";
+		}
+		std::cout << std::endl;
+	}
 }

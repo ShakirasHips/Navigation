@@ -4,19 +4,6 @@
 #include <string>
 #include "AuxiliaryFunctions.h"
 
-struct Position
-{
-	Position() : x(0), y(0) {};
-	Position(int x, int y): x(x),y(y) {};
-	int x;
-	int y;
-};
-enum mapElements 
-{
-	empty,
-	wall,
-};
-
 class Map
 {
 private:

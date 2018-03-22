@@ -1,5 +1,7 @@
 #include "AuxiliaryFunctions.h"
 
+
+
 std::vector<std::string>& aux::stringParser(std::string & s, char delim, std::vector<std::string>& elems)
 {
 	s.erase(0, 1);
