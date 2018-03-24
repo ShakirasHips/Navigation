@@ -115,11 +115,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Solve.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AuxiliaryFunctions.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Solve.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

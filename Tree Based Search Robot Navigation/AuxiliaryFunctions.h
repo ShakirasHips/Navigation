@@ -7,6 +7,8 @@ enum mapElements
 {
 	empty,
 	wall,
+	start,
+	end,
 };
 
 enum Directions

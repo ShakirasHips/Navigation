@@ -3,18 +3,29 @@
 #include <fstream>
 #include <string>
 #include "AuxiliaryFunctions.h"
+#include "Node.h"
 
 class Map
 {
 private:
-	Position startingPosition;
-	Position endPosition;
+	int width, height;
+	Node* startingNode;
+	Node* endingNode;
 	std::vector<std::vector<mapElements>> mapData;
+	std::vector<std::vector<Node*>> tem;
 public:
 	Map();
 
 	bool loadMap(std::string filePath);
 	void printMap();
+
+	int getWidth();
+	int getHeight();
+	Node* getStartingNode();
+	Node* getEndingNode();
+
+
+	void GenerateNodes();
 
 };
 
