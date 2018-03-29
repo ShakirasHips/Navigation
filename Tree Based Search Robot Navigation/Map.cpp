@@ -1,5 +1,6 @@
 #include "Map.h"
 #include <iostream>
+#include "bitmap\bitmap_image.hpp"
 #define log(x) std::cout << x << std::endl
 
 Map::Map()
@@ -7,10 +8,71 @@ Map::Map()
 
 }
 
-bool Map::loadMap(std::string filePath)
+bool Map::loadMap(std::string filepath)
+{
+	if (filepath.substr(filepath.size() - 3) == "txt")
+	{
+		return this->loadTextfile(filepath);
+	}
+	else if (filepath.substr(filepath.size() - 3) == "bmp")
+	{
+		return this->loadBitmap(filepath);
+	}
+	return false;
+}
+
+bool Map::loadBitmap(std::string filepath)
+{
+	bitmap_image image(filepath);
+
+	if (!image)
+	{
+		return false;
+	}
+
+	width = image.width();
+	height = image.height();
+	rgb_t white = make_colour(255, 255, 255);
+	rgb_t black = make_colour(0, 0, 0);
+	rgb_t red = make_colour(255, 0, 0);
+	rgb_t green = make_colour(0, 255, 0);
+
+	for (size_t x = 0; x < width; x++)
+	{
+		std::vector<mapElements> temp;
+		for (size_t y = 0; y < height; y++)
+		{
+			rgb_t colour;
+			//log(x);
+			//log(y);
+			image.get_pixel(x, y, colour);
+
+			if (colour == white)
+			{
+				temp.push_back(empty);
+			}
+			else if (colour == black)
+			{
+				temp.push_back(wall);
+			}
+			else if (colour == green)
+			{
+				temp.push_back(start);
+			}
+			else if (colour == red)
+			{
+				temp.push_back(end);
+			}
+		}
+		mapData.push_back(temp);
+	}
+	return true;
+}
+
+bool Map::loadTextfile(std::string filepath)
 {
 	std::fstream file;
-	file.open(filePath, std::ios::in, std::ios::binary);
+	file.open(filepath, std::ios::in, std::ios::binary);
 
 	if (file.is_open())
 	{
@@ -33,14 +95,14 @@ bool Map::loadMap(std::string filePath)
 		}
 		parsedString.clear();
 		line.clear();
-		
+
 		//set starting pos
 		std::getline(file, line);
 		aux::stringParser(line, ',', parsedString);
 		mapData[parsedString[1]][parsedString[0]] = start;
 		parsedString.clear();
 		line.clear();
-		
+
 		//set ending pos
 		std::getline(file, line);
 		aux::stringParser(line, ',', parsedString);
@@ -73,17 +135,17 @@ bool Map::loadMap(std::string filePath)
 
 void Map::printMap()
 {
-	for (size_t i = 0; i < width; i++)
+	for (auto& rows: mapData)
 	{
-		for (size_t j = 0; j < height; j++)
+		for (auto& index: rows)
 		{
-			if (mapData[i][j] == wall)
+			if (index == wall)
 				std::cout << "w";
-			else if (mapData[i][j] == empty)
+			else if (index == empty)
 				std::cout << "_";
-			else if (mapData[i][j] == start)
+			else if (index == start)
 				std::cout << "s";
-			else if (mapData[i][j] == end)
+			else if (index == end)
 				std::cout << "e";
 		}
 		std::cout << std::endl;
@@ -110,6 +172,8 @@ Node* Map::getEndingNode()
 	return endingNode;
 }
 
+
+//TODO: optimise for straight lines remove unnessessary nodes
 void Map::GenerateNodes()
 {
 	for (size_t i = 0; i < width; i++)

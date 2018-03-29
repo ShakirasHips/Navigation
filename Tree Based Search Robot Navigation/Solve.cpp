@@ -48,10 +48,13 @@ void Solve::depthFirstSearch()
 
 }
 
+
+//TODO. reverse order of path by pushing to a stack
 void Solve::breadthFirstSearch()
 {
 	std::unordered_set<Node*> memory;
 	std::queue<Node*> underConsideration; //needs a better name
+	std::map<Node*, Node*> path;
 	int nodeCountVisited = 0;
 
 	underConsideration.push(startPos);
@@ -66,12 +69,20 @@ void Solve::breadthFirstSearch()
 		{
 			if (current->hasNeighbour(i) && !memory.count(current->getNeighbour(i)))
 			{
+				path[current->getNeighbour(i)] = current;
 				underConsideration.push(current->getNeighbour(i));
 				memory.insert(current->getNeighbour(i));
 			}
 		}
 		memory.insert(current);
 	}
+
+	while (path.count(current))
+	{
+		current = path[current];
+		std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
+	}
+
 	std::cout << nodeCountVisited;
 
 }

@@ -17,6 +17,8 @@ public:
 	Map();
 
 	bool loadMap(std::string filePath);
+	bool loadBitmap(std::string filepath);
+	bool loadTextfile(std::string filepath);
 	void printMap();
 
 	int getWidth();
