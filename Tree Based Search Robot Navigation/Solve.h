@@ -1,5 +1,6 @@
 #pragma once
-#include "Map.h"
+#include "Node.h"
+#include <stack>
 
 class Solve
 {
@@ -10,7 +11,8 @@ public:
 	Solve(Node* start, Node* ending);
 
 
-	void depthFirstSearch();
-	void breadthFirstSearch();
+	std::stack<Node*> depthFirstSearch();
+	std::stack<Node*> breadthFirstSearch();
+	std::stack<Node*> AStar();
 };
 

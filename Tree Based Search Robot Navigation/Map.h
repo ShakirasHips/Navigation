@@ -5,6 +5,14 @@
 #include "AuxiliaryFunctions.h"
 #include "Node.h"
 
+enum mapElements
+{
+	empty,
+	wall,
+	start,
+	end,
+};
+
 class Map
 {
 private:

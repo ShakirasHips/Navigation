@@ -1,5 +1,4 @@
 #include "Solve.h"
-#include <stack>
 #include <queue>
 #include <map>
 #include <unordered_set>
@@ -9,10 +8,10 @@ Solve::Solve(Node* s, Node* e) : startPos(s), goalPos(e)
 {
 }
 
-//N,E,S,W
-void Solve::depthFirstSearch()
+std::stack<Node*> Solve::depthFirstSearch()
 {
 	Node* current = nullptr;
+	std::stack<Node*> result;
 	std::unordered_set<Node*> memory;
 	std::stack<Node*> underConsideration;
 	std::map<Node*, Node*> path;
@@ -34,27 +33,27 @@ void Solve::depthFirstSearch()
 				path[current->getNeighbour(i)] = current;
 			}
 		}
+
 		if (current == goalPos)
+		{
+			result.push(current);
+			while (path.count(current))
+			{
+				current = path[current];
+				result.push(current);
+			}
 			break;
+		}
 	}
-
-	while (path.count(current))
-	{
-		current = path[current];
-		std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
-	}
-
-	std::cout << nodeCountVisited;
-
+	return result;
 }
 
-
-//TODO. reverse order of path by pushing to a stack
-void Solve::breadthFirstSearch()
+std::stack<Node*> Solve::breadthFirstSearch()
 {
 	std::unordered_set<Node*> memory;
 	std::queue<Node*> underConsideration; //needs a better name
 	std::map<Node*, Node*> path;
+	std::stack<Node*> result;
 	int nodeCountVisited = 0;
 
 	underConsideration.push(startPos);
@@ -64,7 +63,7 @@ void Solve::breadthFirstSearch()
 		current = underConsideration.front();
 		underConsideration.pop();
 		nodeCountVisited++;
-
+			
 		for (size_t i = 0; i < 4; i++)
 		{
 			if (current->hasNeighbour(i) && !memory.count(current->getNeighbour(i)))
@@ -75,14 +74,23 @@ void Solve::breadthFirstSearch()
 			}
 		}
 		memory.insert(current);
+
+		if (current == goalPos)
+		{
+			result.push(current);
+			while (path.count(current))
+			{
+				current = path[current];
+				result.push(current);
+			}
+			break;
+		}
 	}
+	return result;
 
-	while (path.count(current))
-	{
-		current = path[current];
-		std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
-	}
+}
 
-	std::cout << nodeCountVisited;
-
+std::stack<Node*> Solve::AStar()
+{
+	
 }
