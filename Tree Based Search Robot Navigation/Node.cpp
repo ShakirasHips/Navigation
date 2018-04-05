@@ -28,7 +28,10 @@ bool Node::hasNeighbour(Directions d)
 
 bool Node::hasNeighbour(int i)
 {
-	return Neighbours[i];
+	if (Neighbours[i] == nullptr)
+		return false;
+	else
+		return true;
 }
 
 //thinking emoji

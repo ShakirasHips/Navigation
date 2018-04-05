@@ -41,5 +41,6 @@ public:
 	void addWestNode(Node*);
 
 	Node* getNeighbors();
+
 };
 
