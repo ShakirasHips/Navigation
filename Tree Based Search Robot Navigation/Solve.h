@@ -13,6 +13,9 @@ public:
 
 	std::stack<Node*> depthFirstSearch();
 	std::stack<Node*> breadthFirstSearch();
+	std::stack<Node*> greedyBestFirstSearch();
 	std::stack<Node*> AStar();
+
+	std::stack<Node*> bidirectionalSearch();
 };
 

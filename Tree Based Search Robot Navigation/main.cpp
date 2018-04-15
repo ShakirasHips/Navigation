@@ -6,15 +6,16 @@
 #include "AuxiliaryFunctions.h"
 #define log(x) std::cout << x << std::endl
 #define filepath "C:/Users/Jayden/Desktop/Portfolio Projects/Tree Based Search Robot Navigation/Tree Based Search Robot Navigation/maps/test.txt"
-#define filepath2 "C:/Users/Jayden/Desktop/m.bmp"
+#define filepath2 "C:/Users/Jayden/Desktop/newermaze.bmp"
 
 int main(int argc, char** argv)
 {
 	Map map;
-	map.loadMap(filepath);
+	map.loadMap(filepath2);
 	map.GenerateNodes();
 	Solve solver(map.getStartingNode(), map.getEndingNode());
-	aux::printStack(solver.AStar());
+	//aux::printStack(solver.bidirectionalSearch());
+	aux::drawPath(solver.bidirectionalSearch(), filepath2, "C:/Users/Jayden/Desktop/lol.bmp" );
 
 
 	/*Map map;

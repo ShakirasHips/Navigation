@@ -24,6 +24,7 @@ class Node
 private: 
 	Position position;
 	Node* Neighbours[4];
+	float heruistic;
 public:
 	Node() {};
 	Node(Position, Node* n, Node* s, Node* e, Node* w);
@@ -41,6 +42,5 @@ public:
 	void addWestNode(Node*);
 
 	Node* getNeighbors();
-
 };
 

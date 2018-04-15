@@ -58,7 +58,7 @@ void aux::drawPath(std::stack<Node*> s, std::string img_filepath, std::string de
 		if (s.empty())
 			break;
 
-		path.set_pixel(temp->getPosition().x, temp->getPosition().y, make_colour(redValue, 0, 255));
+		path.set_pixel(temp->getPosition().x, temp->getPosition().y, make_colour(0, 0, 255));
 		
 		if (redValue != 255)
 			redValue++;
