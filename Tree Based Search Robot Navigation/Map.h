@@ -20,7 +20,7 @@ private:
 	Node* startingNode;
 	Node* endingNode;
 	std::vector<std::vector<mapElements>> mapData;
-	std::vector<std::vector<Node*>> tem;
+	std::vector<std::vector<Node*>> nodeContainer;
 public:
 	Map();
 

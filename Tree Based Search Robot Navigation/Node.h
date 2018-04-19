@@ -13,9 +13,9 @@ struct Position
 enum Directions
 {
 	North,
+	West,
 	South,
 	East,
-	West,
 };
 
 //0= North; 1=south; 2=east; 3= west;
@@ -24,7 +24,6 @@ class Node
 private: 
 	Position position;
 	Node* Neighbours[4];
-	float heruistic;
 public:
 	Node() {};
 	Node(Position, Node* n, Node* s, Node* e, Node* w);
@@ -41,6 +40,5 @@ public:
 	void addEastNode(Node*);
 	void addWestNode(Node*);
 
-	Node* getNeighbors();
 };
 

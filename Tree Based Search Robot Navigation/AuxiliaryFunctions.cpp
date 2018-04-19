@@ -41,14 +41,48 @@ void aux::printStack(std::stack<Node*> s)
 	}
 }
 
+void aux::drawPath(std::stack<Node*> s) 
+{
+	Node* prev;
+	Node* current;
+	if (s.empty())
+	{
+		std::cout << "No path found!! :(" << std::endl;
+		return;
+	}
+	prev = s.top();
+	s.pop();
+	while (!s.empty())
+	{
+		current = s.top();
+		s.pop();
+		
+		if (current->getPosition().x - prev->getPosition().x == 1)
+			std::cout << "Right" << std::endl;
+		else if (current->getPosition().x - prev->getPosition().x == -1)
+			std::cout << "Left" << std::endl;
+		else if (current->getPosition().y - prev->getPosition().y == 1)
+			std::cout << "Down" << std::endl;
+		else if (current->getPosition().y - prev->getPosition().y == -1)
+			std::cout << "Up" << std::endl;
+		
+		prev = current;
+	}
+}
+
 void aux::drawPath(std::stack<Node*> s, std::string img_filepath, std::string dest_filepath)
 {
 	bitmap_image map(img_filepath);
 	bitmap_image path = map;
-
-
+	
 	if (!map)
 		return;
+
+	if (s.empty())
+	{
+		std::cout << "No path found!! :(" << std::endl;
+		return;
+	}
 	s.pop();
 	int redValue = 0;
 	for(;;)

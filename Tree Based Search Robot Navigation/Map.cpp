@@ -21,6 +21,13 @@ bool Map::loadMap(std::string filepath)
 	return false;
 }
 
+/**
+* Load 24bit bitmap file
+* Red 255 pixel is ending node
+* Green 255 pixel is starting node
+* Black 0,0,0 is walls
+* White 255,255,255 is movable space
+**/
 bool Map::loadBitmap(std::string filepath)
 {
 	bitmap_image image(filepath);
@@ -45,11 +52,7 @@ bool Map::loadBitmap(std::string filepath)
 			rgb_t colour;
 			image.get_pixel(x, y, colour);
 
-			if (colour == white)
-			{
-				temp.push_back(empty);
-			}
-			else if (colour == black)
+			if (colour == black)
 			{
 				temp.push_back(wall);
 			}
@@ -60,6 +63,10 @@ bool Map::loadBitmap(std::string filepath)
 			else if (colour == red)
 			{
 				temp.push_back(end);
+			}
+			else
+			{
+				temp.push_back(empty);
 			}
 		}
 		mapData.push_back(temp);
@@ -171,7 +178,7 @@ Node* Map::getEndingNode()
 }
 
 
-//TODO: optimise for straight lines remove unnessessary nodes
+//TODO: optimise for straight lines by remove unnessessary nodes
 void Map::GenerateNodes()
 {
 	for (size_t y = 0; y < height; y++)
@@ -195,37 +202,38 @@ void Map::GenerateNodes()
 				t.push_back(nullptr);
 			}
 		}
-		tem.push_back(t);
+		nodeContainer.push_back(t);
 	}
 
 	for (size_t y = 0; y < height; y++)
 	{
 		for (size_t x = 0; x < width; x++)
 		{
-			if (tem[y][x])
+			if (nodeContainer[y][x])
 			{
-				Node* current = tem[y][x];
+				Node* current = nodeContainer[y][x];
 				if (x != 0) {
-					if (tem[y][x - 1])
-						current->addWestNode(tem[y][x - 1]);
+					if (nodeContainer[y][x - 1])
+						current->addWestNode(nodeContainer[y][x - 1]);
 				}
 				if (x != width-1) {
-					if (tem[y][x + 1])
-						current->addEastNode(tem[y][x + 1]);
+					if (nodeContainer[y][x + 1])
+						current->addEastNode(nodeContainer[y][x + 1]);
 				}
 
 				if (y != 0) {
-					if (tem[y - 1][x])
-						current->addNorthNode(tem[y - 1][x]);
+					if (nodeContainer[y - 1][x])
+						current->addNorthNode(nodeContainer[y - 1][x]);
 				}
 
 				if (y != height-1) {
-					if (tem[y + 1][x])
-						current->addSouthNode(tem[y + 1][x]);
+					if (nodeContainer[y + 1][x])
+						current->addSouthNode(nodeContainer[y + 1][x]);
 				}
 			}
 			
 		}
 		
 	}
+	mapData.clear();
 }

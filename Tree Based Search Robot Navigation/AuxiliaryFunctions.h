@@ -15,4 +15,5 @@ namespace aux
 	void printStack(std::stack<Node*>);
 
 	void drawPath(std::stack<Node*>, std::string img_filepath, std::string dest_filepath);
+	void drawPath(std::stack<Node*>);
 }

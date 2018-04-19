@@ -64,8 +64,3 @@ void Node::addWestNode(Node* node)
 {
 	Neighbours[West] = node;
 }
-
-Node* Node::getNeighbors()
-{
-	return *Neighbours;
-}
