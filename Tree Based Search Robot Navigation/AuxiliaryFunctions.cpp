@@ -84,7 +84,7 @@ void aux::drawPath(std::stack<Node*> s, std::string img_filepath, std::string de
 		return;
 	}
 	s.pop();
-	int redValue = 0;
+
 	for(;;)
 	{
 		Node *temp = s.top();
@@ -93,9 +93,39 @@ void aux::drawPath(std::stack<Node*> s, std::string img_filepath, std::string de
 			break;
 
 		path.set_pixel(temp->getPosition().x, temp->getPosition().y, make_colour(0, 0, 255));
-		
-		if (redValue != 255)
-			redValue++;
+	}
+
+	path.save_image(dest_filepath);
+}
+
+void aux::drawPathWithVistedNodes(std::stack<Node*> s, std::vector<Node*> v, std::string img_filepath, std::string dest_filepath)
+{
+	bitmap_image map(img_filepath);
+	bitmap_image path = map;
+
+	if (!map)
+		return;
+	for (auto node: v)
+	{
+		path.set_pixel(node->getPosition().x, node->getPosition().y, make_colour(0, 255, 255));
+	}
+
+	if (s.empty())
+	{
+		std::cout << "No path found!! :(" << std::endl;
+		path.save_image(dest_filepath);
+		return;
+	}
+
+	s.pop();
+	for (;;)
+	{
+		Node *temp = s.top();
+		s.pop();
+		if (s.empty())
+			break;
+
+		path.set_pixel(temp->getPosition().x, temp->getPosition().y, make_colour(0, 0, 255));
 	}
 
 	path.save_image(dest_filepath);

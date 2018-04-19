@@ -6,6 +6,8 @@
 #include <iostream>
 #include <math.h>
 #define MAX_INT 0x7fffffff
+#define STEP_COST 1
+
 //std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
 Solve::Solve(Node* s, Node* e) : startPos(s), goalPos(e), sizeOfTree(0)
 {
@@ -13,9 +15,9 @@ Solve::Solve(Node* s, Node* e) : startPos(s), goalPos(e), sizeOfTree(0)
 
 std::stack<Node*> Solve::depthFirstSearch()
 {
+	std::unordered_set<Node*> memory;
 	Node* current = nullptr;
 	std::stack<Node*> result;
-	std::unordered_set<Node*> memory;
 	std::stack<Node*> underConsideration;
 	std::map<Node*, Node*> path;
 
@@ -28,11 +30,12 @@ std::stack<Node*> Solve::depthFirstSearch()
 		underConsideration.pop();
 		for (int i = 3; i >= 0; i--)
 		{
-			if (!memory.count(current->getNeighbour(i)) && current->hasNeighbour(i))
-			{
-				underConsideration.push(current->getNeighbour(i));
-				path[current->getNeighbour(i)] = current;
-			}
+if (!memory.count(current->getNeighbour(i)) && current->hasNeighbour(i))
+{
+	nodesVisted.push_back(current->getNeighbour(i));
+	underConsideration.push(current->getNeighbour(i));
+	path[current->getNeighbour(i)] = current;
+}
 		}
 
 		if (current == goalPos)
@@ -54,10 +57,9 @@ std::stack<Node*> Solve::depthFirstSearch()
 std::stack<Node*> Solve::breadthFirstSearch()
 {
 	std::unordered_set<Node*> memory;
-	std::queue<Node*> underConsideration; 
+	std::queue<Node*> underConsideration;
 	std::map<Node*, Node*> path;
 	std::stack<Node*> result;
-	int nodeCountVisited = 0;
 
 	underConsideration.push(startPos);
 	Node* current = nullptr;
@@ -65,15 +67,15 @@ std::stack<Node*> Solve::breadthFirstSearch()
 	{
 		current = underConsideration.front();
 		underConsideration.pop();
-		nodeCountVisited++;
-			
-		for (int i = 3; i >= 0; i--)
+
+		for (int i = 0; i < 4; i++)
 		{
 			if (current->hasNeighbour(i) && !memory.count(current->getNeighbour(i)))
 			{
 				path[current->getNeighbour(i)] = current;
 				underConsideration.push(current->getNeighbour(i));
 				memory.insert(current->getNeighbour(i));
+				nodesVisted.push_back(current->getNeighbour(i));
 			}
 		}
 		memory.insert(current);
@@ -89,48 +91,70 @@ std::stack<Node*> Solve::breadthFirstSearch()
 			break;
 		}
 	}
-	sizeOfTree = memory.size() + underConsideration.size();
+	sizeOfTree = memory.size();
 	return result;
 
 }
 
-int manhattan_dist(Node* a, Node* b)
+int Solve::manhattan_dist(Node* a, Node* b)
 {
-	return std::abs(b->getPosition().x - a->getPosition().x) + 
+	return std::abs(b->getPosition().x - a->getPosition().x) +
 		std::abs((b->getPosition().y - a->getPosition().y));
 }
 
-int euclid_dist(Node* a, Node* b)
+int Solve::euclid_dist(Node* a, Node* b)
 {
 	return std::sqrt(((b->getPosition().x - a->getPosition().x)*(b->getPosition().x - a->getPosition().x)
-	+ ((b->getPosition().y - a->getPosition().y) * (b->getPosition().y - a->getPosition().y))));
+		+ ((b->getPosition().y - a->getPosition().y) * (b->getPosition().y - a->getPosition().y))));
 }
 
-//TODO: change this to prio que
+
+//Ties the node to its score so it can be sorted in a prio queue
+struct Node_fScore_pair
+{
+	Node* node;
+	int fScore;
+
+	Node_fScore_pair() : node(nullptr), fScore(MAX_INT) {}
+	Node_fScore_pair(Node* node, int value) : node(node), fScore(value) {};
+
+	//operator so priority_queue stores it in reversed order, then N,W,S,E
+	bool operator<(const Node_fScore_pair& right) const
+	{
+
+		if (this->fScore == right.fScore)
+		{
+			if (this->node->getPosition().x - right.node->getPosition().x <= -1)
+				return false;
+			else if (this->node->getPosition().y - right.node->getPosition().y <= -1)
+				return false;
+			else if (this->node->getPosition().x - right.node->getPosition().x >= 1)
+				return true;
+			else if (this->node->getPosition().y - right.node->getPosition().y >= 1)
+				return true;
+		}
+		else
+		{
+			return this->fScore > right.fScore;
+		}
+	}
+};
+
 std::stack<Node*> Solve::greedyBestFirstSearch()
 {
-	std::unordered_set<Node*> underConsideration;
 	std::unordered_set<Node*> memory;
-	std::map<Node*, float> nodeScore;
+	std::priority_queue<Node_fScore_pair> underConsideration;
 	std::map<Node*, Node*> path;
 	std::stack<Node*> result;
 	Node* current = startPos;
 
-	underConsideration.insert(startPos); 
+	underConsideration.push(Node_fScore_pair(startPos, euclid_dist(startPos, goalPos)));
 	memory.insert(startPos);
-	nodeScore[startPos] = euclid_dist(startPos, goalPos);
 
 	while (!underConsideration.empty())
 	{
-		bool first = false;
-		for (auto node: underConsideration)
-		{
-			if (nodeScore[node] < nodeScore[current] || !first)
-				current = node;
-
-			first = true;
-		}
-		underConsideration.erase(current);
+		current = underConsideration.top().node;
+		underConsideration.pop();
 
 		if (current == goalPos)
 		{
@@ -147,10 +171,10 @@ std::stack<Node*> Solve::greedyBestFirstSearch()
 		{
 			if (current->hasNeighbour(i) && !memory.count(current->getNeighbour(i)))
 			{
-				underConsideration.insert(current->getNeighbour(i));
+				underConsideration.push(Node_fScore_pair(current->getNeighbour(i), euclid_dist(current->getNeighbour(i), goalPos)));
 				memory.insert(current->getNeighbour(i));
+				nodesVisted.push_back(current->getNeighbour(i));
 				path[current->getNeighbour(i)] = current;
-				nodeScore[current->getNeighbour(i)] = euclid_dist(current->getNeighbour(i), goalPos);
 
 			}
 		}
@@ -161,24 +185,8 @@ std::stack<Node*> Solve::greedyBestFirstSearch()
 
 std::stack<Node*> Solve::AStar()
 {
-	//Ties the node to its score so it can be sorted in a prio queue
-	struct Node_fScore_pair
-	{
-		Node* node;
-		int fScore;
-
-		Node_fScore_pair() : node(nullptr), fScore(MAX_INT) {}
-		Node_fScore_pair(Node* node, int value) : node(node), fScore(value) {};
-
-		//rev operator so prio que stores it in rev order
-		bool operator<(const Node_fScore_pair& right) const
-		{
-			return this->fScore > right.fScore;
-		}
-	};
-
-	std::priority_queue<Node_fScore_pair> underConsideration;
 	std::unordered_set<Node*> memory;
+	std::priority_queue<Node_fScore_pair> underConsideration;
 	std::map<Node*, int> costSoFar;
 	std::map<Node*, Node*> path;
 	std::stack<Node*> result;
@@ -211,9 +219,10 @@ std::stack<Node*> Solve::AStar()
 			if (current->hasNeighbour(i) && !memory.count(current->getNeighbour(i)))
 			{	
 				memory.insert(current->getNeighbour(i));
+				nodesVisted.push_back(current->getNeighbour(i));
 
 				//This +1 value needs to change if using manhattan dist to +2 or sometimes isn't admissable
-				int newCost = costSoFar[current] + 1;
+				int newCost = costSoFar[current] + STEP_COST;
 				if (costSoFar.count(current->getNeighbour(i)))
 				{
 					if (!costSoFar.count(current->getNeighbour(i)) || newCost < costSoFar[current->getNeighbour(i)])
@@ -222,7 +231,7 @@ std::stack<Node*> Solve::AStar()
 				path[current->getNeighbour(i)] = current;
 				costSoFar[current->getNeighbour(i)] = newCost;
 				
-				underConsideration.push(Node_fScore_pair(current->getNeighbour(i), costSoFar[current] + euclid_dist(current->getNeighbour(i), goalPos)));
+				underConsideration.push(Node_fScore_pair(current->getNeighbour(i), costSoFar[current->getNeighbour(i)] + euclid_dist(current->getNeighbour(i), goalPos)));
 
 			}
 		}
@@ -276,6 +285,7 @@ std::stack<Node*> Solve::bidirectionalSearch()
 				startPath[startCurrent->getNeighbour(i)] = startCurrent;
 				startUnderConsideration.push(startCurrent->getNeighbour(i));
 				startMemory.insert(startCurrent->getNeighbour(i));
+				nodesVisted.push_back(startCurrent->getNeighbour(i));
 			}
 
 			if (goalCurrent->hasNeighbour(i) && !goalMemory.count(goalCurrent->getNeighbour(i)))
@@ -283,6 +293,8 @@ std::stack<Node*> Solve::bidirectionalSearch()
 				goalPath[goalCurrent->getNeighbour(i)] = goalCurrent;
 				goalUnderConsideration.push(goalCurrent->getNeighbour(i));
 				goalMemory.insert(goalCurrent->getNeighbour(i));
+				nodesVisted.push_back(goalCurrent->getNeighbour(i));
+
 			}
 		}
 
@@ -327,41 +339,34 @@ std::stack<Node*> Solve::bidirectionalSearch()
 	return result;
 }
 
-int Solve::search(std::stack<Node*> underConsideration, int cost, int bound, std::map<Node*, Node*> &currentPath, std::unordered_set<Node*>& memory)
+int Solve::search(Node* node, int cost, int bound, std::map<Node*, Node*> &currentPath, bool& found, std::unordered_set<Node*>& memory)
 {
-
-	Node* current = underConsideration.top();
-	int fCost = cost + manhattan_dist(current, goalPos);
-	
+	int fCost = cost + euclid_dist(node, goalPos);
 	if (fCost > bound)
 		return fCost;
 
-	if (current == goalPos)
-		return -1;
+	if (node == goalPos)
+	{
+		found = true;
+		return 0;
+	}
 
-	int min = MAX_INT;
+	int min = -1;
 	for (size_t i = 0; i < 4; i++)
 	{
-		if (current->hasNeighbour(i) && !memory.count(current->getNeighbour(i)))
+		if (node->hasNeighbour(i) && !memory.count(node->getNeighbour(i)))
 		{
-			underConsideration.push(current->getNeighbour(i));
-			currentPath[current->getNeighbour(i)] = current;
-			memory.insert(current);
-
-			//std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
-			int t = search(underConsideration, cost + 1, bound, currentPath, memory);
-
-			if (t == -1)
-				return -1;
-
-			if (t < min)
-				min = t;
-
-			if (!underConsideration.empty())
+			int temp = search(node->getNeighbour(i), cost + STEP_COST, bound, currentPath, found, memory);
+			currentPath[node->getNeighbour(i)] = node;
+			if (found)
 			{
-				underConsideration.pop();
+				return 0;
 			}
 
+			if (temp > min)
+			{
+				min = temp;
+			}
 		}
 	}
 	return min;
@@ -369,39 +374,60 @@ int Solve::search(std::stack<Node*> underConsideration, int cost, int bound, std
 
 std::stack<Node*> Solve::iterativeDeepeningAStar()
 {
-	std::stack<Node*> underConsideration;
 	std::unordered_set<Node*> memory;
-	std::map<Node*, int> costSoFar;
 	std::map<Node*, Node*> path;
 	std::stack<Node*> result;
-	Node* current;
-
-	int bound = manhattan_dist(startPos, goalPos);
-	underConsideration.push(startPos);
-	memory.insert(startPos);
+	bool found = false;
+	int bound = euclid_dist(startPos, goalPos);
 
 	while (true)
 	{
-		int t = search(underConsideration, 0, bound, path, memory);
+		memory.insert(startPos);
+		int temp = search(startPos, 0, bound, path, found, memory);
 
-		if (t == -1)
+		if (found)
+		{
 			break;
+		}
 
-		if (t == MAX_INT)
+		if (temp < -1)
 			return result;
 
-		bound = t;
+		bound = temp;
+		path.clear();
+		memory.clear();
 	}
 
-	current = goalPos;
+	Node* current = goalPos;
 	while (path.count(current))
 	{
-		//std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
 		result.push(current);
 		current = path[current];
+		if (current == startPos)
+			break;
 	}
 	result.push(startPos);
 	return result;
+}
+
+//used to test if Node_fscore_pair was working correctly
+void Solve::test()
+{
+	std::priority_queue<Node_fScore_pair> queue;
+	queue.push(Node_fScore_pair(new Node(Position(1, 0), nullptr, nullptr, nullptr, nullptr), 8));
+	queue.push(Node_fScore_pair(new Node(Position(1, 2), nullptr, nullptr, nullptr, nullptr), 8));
+	queue.push(Node_fScore_pair(new Node(Position(0, 1), nullptr, nullptr, nullptr, nullptr), 8));
+	queue.push(Node_fScore_pair(new Node(Position(2, 1), nullptr, nullptr, nullptr, nullptr), 8));
+	queue.push(Node_fScore_pair(new Node(Position(5, 4), nullptr, nullptr, nullptr, nullptr), 6));
+
+	while (!queue.empty())
+	{
+		Node* current = queue.top().node;
+		queue.pop();
+		std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
+	}
+
+
 }
 
 

@@ -8,8 +8,11 @@ class Solve
 private:
 	Node* startPos;
 	Node* goalPos;
+	std::vector<Node*> nodesVisted;
 	int sizeOfTree;
-	int search(std::stack<Node*> path, int cost, int bound, std::map<Node*, Node*> &current, std::unordered_set<Node*> &memeory);
+	int euclid_dist(Node* a, Node* b);
+	int manhattan_dist(Node* a, Node* b);
+	int search(Node* node, int cost, int bound, std::map<Node*, Node*> &currentPath, bool &found, std::unordered_set<Node*>& memory);
 public:
 	Solve(Node* start, Node* ending);
 
@@ -22,6 +25,8 @@ public:
 	std::stack<Node*> iterativeDeepeningAStar();
 
 	int getSizeOfTree() { return sizeOfTree; }
+	std::vector<Node*> getNodesVisted() { return nodesVisted; }
 
+	void test();
 };
 

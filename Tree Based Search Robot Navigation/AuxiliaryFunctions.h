@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <stack>
+#include <unordered_set>
 #include "Node.h"
 
 class Node;
@@ -16,4 +17,5 @@ namespace aux
 
 	void drawPath(std::stack<Node*>, std::string img_filepath, std::string dest_filepath);
 	void drawPath(std::stack<Node*>);
+	void drawPathWithVistedNodes(std::stack<Node*>, std::vector<Node*>, std::string img_filepath, std::string dest_filepath);
 }
