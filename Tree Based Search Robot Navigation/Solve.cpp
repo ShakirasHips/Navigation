@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <math.h>
-#define MAX_INT 0x7fffffff
+#define MAX_INT 0x5fffffff
 #define STEP_COST 1
 
 //std::cout << current->getPosition().x << ", " << current->getPosition().y << std::endl;
@@ -30,12 +30,12 @@ std::stack<Node*> Solve::depthFirstSearch()
 		underConsideration.pop();
 		for (int i = 3; i >= 0; i--)
 		{
-if (!memory.count(current->getNeighbour(i)) && current->hasNeighbour(i))
-{
-	nodesVisted.push_back(current->getNeighbour(i));
-	underConsideration.push(current->getNeighbour(i));
-	path[current->getNeighbour(i)] = current;
-}
+			if (!memory.count(current->getNeighbour(i)) && current->hasNeighbour(i))
+			{
+				nodesVisted.push_back(current->getNeighbour(i));
+				underConsideration.push(current->getNeighbour(i));
+				path[current->getNeighbour(i)] = current;
+			}
 		}
 
 		if (current == goalPos)
@@ -124,14 +124,14 @@ struct Node_fScore_pair
 
 		if (this->fScore == right.fScore)
 		{
-			if (this->node->getPosition().x - right.node->getPosition().x <= -1)
+			
+			if (this->node->getPosition().y - right.node->getPosition().y <= 0)
 				return false;
-			else if (this->node->getPosition().y - right.node->getPosition().y <= -1)
+			else if (this->node->getPosition().x - right.node->getPosition().x <= 0)
 				return false;
-			else if (this->node->getPosition().x - right.node->getPosition().x >= 1)
+			else
 				return true;
-			else if (this->node->getPosition().y - right.node->getPosition().y >= 1)
-				return true;
+	
 		}
 		else
 		{
@@ -339,9 +339,10 @@ std::stack<Node*> Solve::bidirectionalSearch()
 	return result;
 }
 
-int Solve::search(Node* node, int cost, int bound, std::map<Node*, Node*> &currentPath, bool& found, std::unordered_set<Node*>& memory)
+int Solve::RecursiveItterativeSearch(Node* node, int cost, int bound, std::map<Node*, Node*> &currentPath, bool& found)
 {
 	int fCost = cost + euclid_dist(node, goalPos);
+	nodesVisted.push_back(node);
 	if (fCost > bound)
 		return fCost;
 
@@ -351,19 +352,20 @@ int Solve::search(Node* node, int cost, int bound, std::map<Node*, Node*> &curre
 		return 0;
 	}
 
-	int min = -1;
+	int min = MAX_INT;
 	for (size_t i = 0; i < 4; i++)
 	{
-		if (node->hasNeighbour(i) && !memory.count(node->getNeighbour(i)))
+		if (node->hasNeighbour(i))
 		{
-			int temp = search(node->getNeighbour(i), cost + STEP_COST, bound, currentPath, found, memory);
+			int newCost = cost + STEP_COST;
+			int temp = RecursiveItterativeSearch(node->getNeighbour(i), newCost, bound, currentPath, found);
 			currentPath[node->getNeighbour(i)] = node;
 			if (found)
 			{
 				return 0;
 			}
 
-			if (temp > min)
+			if (temp < min)
 			{
 				min = temp;
 			}
@@ -383,17 +385,18 @@ std::stack<Node*> Solve::iterativeDeepeningAStar()
 	while (true)
 	{
 		memory.insert(startPos);
-		int temp = search(startPos, 0, bound, path, found, memory);
+		int temp = RecursiveItterativeSearch(startPos, 0, bound, path, found);
 
 		if (found)
 		{
 			break;
 		}
 
-		if (temp < -1)
+		if (temp > MAX_INT)
 			return result;
 
-		bound = temp;
+		bound += temp;
+		nodesVisted.clear();
 		path.clear();
 		memory.clear();
 	}
@@ -406,11 +409,13 @@ std::stack<Node*> Solve::iterativeDeepeningAStar()
 		if (current == startPos)
 			break;
 	}
+	sizeOfTree = nodesVisted.size();
 	result.push(startPos);
 	return result;
 }
 
 //used to test if Node_fscore_pair was working correctly
+//should return nodes 5,4 - 1,0 - 0,1- 1,2 - 2,1 in that order
 void Solve::test()
 {
 	std::priority_queue<Node_fScore_pair> queue;

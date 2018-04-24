@@ -2,6 +2,9 @@
 #include <iostream>
 #include "bitmap\bitmap_image.hpp"
 
+
+//string parser splits strings by a char
+//used to read lines in text file
 std::vector<std::string>& aux::stringParser(std::string & s, char delim, std::vector<std::string>& elems)
 {
 	s.erase(0, 1);
@@ -16,6 +19,8 @@ std::vector<std::string>& aux::stringParser(std::string & s, char delim, std::ve
 
 }
 
+//string parser but returns ints instead
+//used to get data out of text files
 std::vector<int>& aux::stringParser(std::string &s, char delim, std::vector<int> &elems)
 {
 	s.erase(0, 1);
@@ -30,6 +35,7 @@ std::vector<int>& aux::stringParser(std::string &s, char delim, std::vector<int>
 
 }
 
+//prints stack used for testing
 void aux::printStack(std::stack<Node*> s) 
 {
 	Node* temp;
@@ -41,6 +47,8 @@ void aux::printStack(std::stack<Node*> s)
 	}
 }
 
+//prints path to console
+//assumption made that each node is 1 posisition away from each other this can be fixed
 void aux::drawPath(std::stack<Node*> s) 
 {
 	Node* prev;
@@ -70,6 +78,7 @@ void aux::drawPath(std::stack<Node*> s)
 	}
 }
 
+//draw path on bitmap that is loaded, ouputs new file.
 void aux::drawPath(std::stack<Node*> s, std::string img_filepath, std::string dest_filepath)
 {
 	bitmap_image map(img_filepath);
@@ -98,6 +107,7 @@ void aux::drawPath(std::stack<Node*> s, std::string img_filepath, std::string de
 	path.save_image(dest_filepath);
 }
 
+//draws path and draws where tree has expanded to
 void aux::drawPathWithVistedNodes(std::stack<Node*> s, std::vector<Node*> v, std::string img_filepath, std::string dest_filepath)
 {
 	bitmap_image map(img_filepath);

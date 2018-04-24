@@ -14,14 +14,6 @@
 
 int main(int argc, char** argv)
 {
-	//Map map;
-	//map.loadMap(filepath2);
-	//map.GenerateNodes();
-	//Solve solver(map.getStartingNode(), map.getEndingNode());
-	////aux::drawPath(solver.iterativeDeepeningAStar());
-	//aux::drawPath(solver.iterativeDeepeningAStar(), filepath2, "C:/Users/Jayden/Desktop/memes.bmp");
-	//std::cin.get();
-
 	if (!(argc == 3 || argc == 4))
 	{
 		std::cout << "Invailed argurments" << std::endl;

@@ -8,6 +8,7 @@ Map::Map()
 
 }
 
+//the default function that should be called, calls other loaders depending on filetype
 bool Map::loadMap(std::string filepath)
 {
 	if (filepath.substr(filepath.size() - 3) == "txt")
@@ -26,7 +27,7 @@ bool Map::loadMap(std::string filepath)
 * Red 255 pixel is ending node
 * Green 255 pixel is starting node
 * Black 0,0,0 is walls
-* White 255,255,255 is movable space
+* anthing else is movable space
 **/
 bool Map::loadBitmap(std::string filepath)
 {
@@ -74,6 +75,7 @@ bool Map::loadBitmap(std::string filepath)
 	return true;
 }
 
+//Loads from text file using that format set up in the assignment
 bool Map::loadTextfile(std::string filepath)
 {
 	std::fstream file;
@@ -138,6 +140,7 @@ bool Map::loadTextfile(std::string filepath)
 	}
 }
 
+//print map to console, mostly used for testing the map loaded correctly
 void Map::printMap()
 {
 	for (auto& rows: mapData)
@@ -178,7 +181,9 @@ Node* Map::getEndingNode()
 }
 
 
-//TODO: optimise for straight lines by remove unnessessary nodes
+//Generate nodes and links them up to there neighbors
+//map is set up like this just in case i want to "compress" the map or perform some sort of pre-process on it
+//also clears mapData to conserve on memeory at the end
 void Map::GenerateNodes()
 {
 	for (size_t y = 0; y < height; y++)

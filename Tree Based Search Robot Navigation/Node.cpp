@@ -19,8 +19,6 @@ Position Node::getPosition()
 	return position;
 }
 
-
-//hmmmmm
 bool Node::hasNeighbour(Directions d)
 {
 	return Neighbours[d];
@@ -34,7 +32,6 @@ bool Node::hasNeighbour(int i)
 		return true;
 }
 
-//thinking emoji
 Node* Node::getNeighbour(Directions d)
 {
 	return Neighbours[d];

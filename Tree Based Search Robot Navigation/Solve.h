@@ -12,7 +12,7 @@ private:
 	int sizeOfTree;
 	int euclid_dist(Node* a, Node* b);
 	int manhattan_dist(Node* a, Node* b);
-	int search(Node* node, int cost, int bound, std::map<Node*, Node*> &currentPath, bool &found, std::unordered_set<Node*>& memory);
+	int RecursiveItterativeSearch(Node* node, int cost, int bound, std::map<Node*, Node*> &currentPath, bool &found);
 public:
 	Solve(Node* start, Node* ending);
 
